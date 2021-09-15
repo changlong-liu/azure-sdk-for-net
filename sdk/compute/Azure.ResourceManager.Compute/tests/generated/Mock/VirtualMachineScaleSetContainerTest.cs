@@ -36,7 +36,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetVirtualMachineScaleSetContainerAsync();
             // Example: Create a custom-image scale set from an unmanaged generalized os image.
             var vmScaleSetName = "{vmss-name}";
-
             var parameters = new VirtualMachineScaleSetData("westus")
             {
                 Sku = new Sku()
@@ -83,7 +82,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetVirtualMachineScaleSetContainerAsync();
             // Example: Create a custom-image scale set from an unmanaged generalized os image.
             var vmScaleSetName = "{vmss-name}";
-
             var parameters = new VirtualMachineScaleSetData("westus")
             {
                 Sku = new Sku()

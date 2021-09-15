@@ -36,7 +36,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetVirtualMachineContainerAsync();
             // Example: Create a Linux vm with a patch setting assessmentMode of ImageDefault.
             var vmName = "myVM";
-
             var parameters = new VirtualMachineData("westus")
             {
                 HardwareProfile = new HardwareProfile()
@@ -88,7 +87,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetVirtualMachineContainerAsync();
             // Example: Create a Linux vm with a patch setting assessmentMode of ImageDefault.
             var vmName = "myVM";
-
             var parameters = new VirtualMachineData("westus")
             {
                 HardwareProfile = new HardwareProfile()

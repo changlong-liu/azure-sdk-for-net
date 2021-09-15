@@ -36,7 +36,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetDiskEncryptionSetContainerAsync();
             // Example: Create a disk encryption set with key vault from a different subscription.
             var diskEncryptionSetName = "myDiskEncryptionSet";
-
             var diskEncryptionSet = new DiskEncryptionSetData("West US")
             {
                 Identity = new EncryptionSetIdentity()
@@ -56,7 +55,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetDiskEncryptionSetContainerAsync();
             // Example: Create a disk encryption set with key vault from a different subscription.
             var diskEncryptionSetName = "myDiskEncryptionSet";
-
             var diskEncryptionSet = new DiskEncryptionSetData("West US")
             {
                 Identity = new EncryptionSetIdentity()

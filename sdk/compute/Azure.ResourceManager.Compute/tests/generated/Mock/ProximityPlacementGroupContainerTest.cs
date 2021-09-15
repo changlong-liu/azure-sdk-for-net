@@ -36,7 +36,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetProximityPlacementGroupContainerAsync();
             // Example: Create or Update a proximity placement group.
             var proximityPlacementGroupName = "myProximityPlacementGroup";
-
             var parameters = new ProximityPlacementGroupData("westus")
             {
                 ProximityPlacementGroupType = new Compute.Models.ProximityPlacementGroupType("Standard"),
@@ -51,7 +50,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetProximityPlacementGroupContainerAsync();
             // Example: Create or Update a proximity placement group.
             var proximityPlacementGroupName = "myProximityPlacementGroup";
-
             var parameters = new ProximityPlacementGroupData("westus")
             {
                 ProximityPlacementGroupType = new Compute.Models.ProximityPlacementGroupType("Standard"),

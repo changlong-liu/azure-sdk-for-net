@@ -36,7 +36,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetSnapshotContainerAsync();
             // Example: Create a snapshot by importing an unmanaged blob from a different subscription.
             var snapshotName = "mySnapshot1";
-
             var snapshot = new SnapshotData("West US")
             {
                 CreationData = new CreationData(new Compute.Models.DiskCreateOption("Import"))
@@ -55,7 +54,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetSnapshotContainerAsync();
             // Example: Create a snapshot by importing an unmanaged blob from a different subscription.
             var snapshotName = "mySnapshot1";
-
             var snapshot = new SnapshotData("West US")
             {
                 CreationData = new CreationData(new Compute.Models.DiskCreateOption("Import"))

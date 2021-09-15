@@ -13,45 +13,14 @@ using Azure.ResourceManager.Compute.Tests.Helpers;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
-using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Compute.Tests
 {
     /// <summary> Test for AvailabilitySet. </summary>
-    public partial class AvailabilitySetContainerMockTests : MockTestBase
+    public partial class AvailabilitySetContainerMockTests : ComputeTestBase
     {
-        public AvailabilitySetContainerMockTests(bool isAsync) : base(isAsync, RecordedTestMode.Record)
+        public AvailabilitySetContainerMockTests(bool isAsync) : base(isAsync)
         {
-            System.Net.ServicePointManager.ServerCertificateValidationCallback +=
-    delegate (object sender, System.Security.Cryptography.X509Certificates.X509Certificate certificate,
-                            System.Security.Cryptography.X509Certificates.X509Chain chain,
-                            System.Net.Security.SslPolicyErrors sslPolicyErrors)
-    {
-        return true; // **** Always accept
-    };
-        }
-
-        [SetUp]
-        public void CreateCommonClient()
-        {
-            Client = GetArmClient();
-        }
-
-        ArmClient Client;
-        protected Subscription DefaultSubscription => Client.DefaultSubscription;
-        protected Location DefaultLocation => Location.WestUS2;
-        protected async Task<ResourceGroup> CreateResourceGroupAsync()
-        {
-            var resourceGroupName = "testRG-";
-            return await DefaultSubscription.GetResourceGroups().CreateOrUpdateAsync(
-                resourceGroupName,
-                new ResourceGroupData(DefaultLocation)
-                {
-                    Tags =
-                    {
-                        { "test", "env" }
-                    }
-                });
         }
 
         private async Task<AvailabilitySetContainer> GetAvailabilitySetContainerAsync()
@@ -62,12 +31,26 @@ namespace Azure.ResourceManager.Compute.Tests
 
         [TestCase]
         [RecordedTest]
+        public async Task CreateOrUpdate()
+        {
+            var container = await GetAvailabilitySetContainerAsync();
+            // Example: Create an availability set.
+            var availabilitySetName = "myAvailabilitySet";
+            var parameters = new AvailabilitySetData("westus")
+            {
+                PlatformUpdateDomainCount = 20,
+                PlatformFaultDomainCount = 2,
+            };
+
+            container.CreateOrUpdate(availabilitySetName, parameters);
+        }
+        [TestCase]
+        [RecordedTest]
         public async Task CreateOrUpdateAsync()
         {
             var container = await GetAvailabilitySetContainerAsync();
             // Example: Create an availability set.
             var availabilitySetName = "myAvailabilitySet";
-
             var parameters = new AvailabilitySetData("westus")
             {
                 PlatformUpdateDomainCount = 20,

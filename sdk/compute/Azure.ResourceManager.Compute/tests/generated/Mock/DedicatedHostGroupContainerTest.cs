@@ -36,18 +36,12 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetDedicatedHostGroupContainerAsync();
             // Example: Create or update a dedicated host group.
             var hostGroupName = "myDedicatedHostGroup";
-
             var parameters = new DedicatedHostGroupData("westus")
             {
                 PlatformFaultDomainCount = 3,
                 SupportAutomaticPlacement = true,
             };
-            parameters.Tags.ReplaceWith(new System.Collections.Generic.Dictionary<string, string>()
-{
-{
-"department","finance"}
-,});
-
+            parameters.Tags.ReplaceWith(new System.Collections.Generic.Dictionary<string, string>() { { "department", "finance" }, });
             container.CreateOrUpdate(hostGroupName, parameters);
         }
         [TestCase]
@@ -57,18 +51,12 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetDedicatedHostGroupContainerAsync();
             // Example: Create or update a dedicated host group.
             var hostGroupName = "myDedicatedHostGroup";
-
             var parameters = new DedicatedHostGroupData("westus")
             {
                 PlatformFaultDomainCount = 3,
                 SupportAutomaticPlacement = true,
             };
-            parameters.Tags.ReplaceWith(new System.Collections.Generic.Dictionary<string, string>()
-{
-{
-"department","finance"}
-,});
-
+            parameters.Tags.ReplaceWith(new System.Collections.Generic.Dictionary<string, string>() { { "department", "finance" }, });
             await container.CreateOrUpdateAsync(hostGroupName, parameters);
         }
     }

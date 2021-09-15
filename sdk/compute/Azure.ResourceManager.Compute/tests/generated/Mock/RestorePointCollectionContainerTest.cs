@@ -37,7 +37,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetRestorePointCollectionContainerAsync();
             // Example: Create or update a restore point collection.
             var restorePointCollectionName = "myRpc";
-
             var parameters = new RestorePointCollectionData("norwayeast")
             {
                 Source = new RestorePointCollectionSourceProperties()
@@ -45,12 +44,7 @@ namespace Azure.ResourceManager.Compute.Tests
                     Id = new ResourceIdentifier("/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/myVM"),
                 },
             };
-            parameters.Tags.ReplaceWith(new System.Collections.Generic.Dictionary<string, string>()
-{
-{
-"myTag1","tagValue1"}
-,});
-
+            parameters.Tags.ReplaceWith(new System.Collections.Generic.Dictionary<string, string>() { { "myTag1", "tagValue1" }, });
             container.CreateOrUpdate(restorePointCollectionName, parameters);
         }
         [TestCase]
@@ -60,7 +54,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetRestorePointCollectionContainerAsync();
             // Example: Create or update a restore point collection.
             var restorePointCollectionName = "myRpc";
-
             var parameters = new RestorePointCollectionData("norwayeast")
             {
                 Source = new RestorePointCollectionSourceProperties()
@@ -68,12 +61,7 @@ namespace Azure.ResourceManager.Compute.Tests
                     Id = new ResourceIdentifier("/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/myVM"),
                 },
             };
-            parameters.Tags.ReplaceWith(new System.Collections.Generic.Dictionary<string, string>()
-{
-{
-"myTag1","tagValue1"}
-,});
-
+            parameters.Tags.ReplaceWith(new System.Collections.Generic.Dictionary<string, string>() { { "myTag1", "tagValue1" }, });
             await container.CreateOrUpdateAsync(restorePointCollectionName, parameters);
         }
     }

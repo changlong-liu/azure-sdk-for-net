@@ -36,7 +36,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetDiskContainerAsync();
             // Example: Create a managed disk and associate with disk access resource.
             var diskName = "myDisk";
-
             var disk = new DiskData("West US")
             {
                 CreationData = new CreationData(new Compute.Models.DiskCreateOption("Empty")),
@@ -54,7 +53,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetDiskContainerAsync();
             // Example: Create a managed disk and associate with disk access resource.
             var diskName = "myDisk";
-
             var disk = new DiskData("West US")
             {
                 CreationData = new CreationData(new Compute.Models.DiskCreateOption("Empty")),

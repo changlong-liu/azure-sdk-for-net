@@ -37,7 +37,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetImageContainerAsync();
             // Example: Create a virtual machine image from a blob with DiskEncryptionSet resource.
             var imageName = "myImage";
-
             var parameters = new ImageData("West US")
             {
                 StorageProfile = new ImageStorageProfile()
@@ -62,7 +61,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetImageContainerAsync();
             // Example: Create a virtual machine image from a blob with DiskEncryptionSet resource.
             var imageName = "myImage";
-
             var parameters = new ImageData("West US")
             {
                 StorageProfile = new ImageStorageProfile()

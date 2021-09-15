@@ -36,7 +36,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetCloudServiceContainerAsync();
             // Example: Create New Cloud Service with Multiple Roles
             var cloudServiceName = "{cs-name}";
-
             var parameters = new CloudServiceData("westus")
             {
                 Properties = new CloudServiceProperties()
@@ -58,7 +57,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetCloudServiceContainerAsync();
             // Example: Create New Cloud Service with Multiple Roles
             var cloudServiceName = "{cs-name}";
-
             var parameters = new CloudServiceData("westus")
             {
                 Properties = new CloudServiceProperties()

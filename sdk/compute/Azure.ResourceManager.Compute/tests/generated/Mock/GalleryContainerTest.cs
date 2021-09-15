@@ -36,7 +36,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetGalleryContainerAsync();
             // Example: Create or update a simple gallery with sharing profile.
             var galleryName = "myGalleryName";
-
             var gallery = new GalleryData("West US")
             {
                 Description = "This is the gallery description.",
@@ -55,7 +54,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetGalleryContainerAsync();
             // Example: Create or update a simple gallery with sharing profile.
             var galleryName = "myGalleryName";
-
             var gallery = new GalleryData("West US")
             {
                 Description = "This is the gallery description.",

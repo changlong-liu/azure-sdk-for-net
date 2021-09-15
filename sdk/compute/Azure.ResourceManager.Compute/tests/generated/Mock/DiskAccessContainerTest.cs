@@ -36,7 +36,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetDiskAccessContainerAsync();
             // Example: Create a disk access resource.
             var diskAccessName = "myDiskAccess";
-
             var diskAccess = new DiskAccessData("West US");
 
             container.CreateOrUpdate(diskAccessName, diskAccess);
@@ -48,7 +47,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetDiskAccessContainerAsync();
             // Example: Create a disk access resource.
             var diskAccessName = "myDiskAccess";
-
             var diskAccess = new DiskAccessData("West US");
 
             await container.CreateOrUpdateAsync(diskAccessName, diskAccess);

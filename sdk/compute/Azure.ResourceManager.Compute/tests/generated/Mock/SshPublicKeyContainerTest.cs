@@ -36,7 +36,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetSshPublicKeyContainerAsync();
             // Example: Create a new SSH public key resource.
             var sshPublicKeyName = "mySshPublicKeyName";
-
             var parameters = new SshPublicKeyData("westus")
             {
                 PublicKey = "{ssh-rsa public key}",
@@ -51,7 +50,6 @@ namespace Azure.ResourceManager.Compute.Tests
             var container = await GetSshPublicKeyContainerAsync();
             // Example: Create a new SSH public key resource.
             var sshPublicKeyName = "mySshPublicKeyName";
-
             var parameters = new SshPublicKeyData("westus")
             {
                 PublicKey = "{ssh-rsa public key}",
