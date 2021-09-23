@@ -5,47 +5,40 @@
 
 #nullable disable
 
+using System.Net;
 using System.Threading.Tasks;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.Compute;
 using Azure.ResourceManager.Compute.Models;
+using Azure.ResourceManager.Compute.Tests;
 using Azure.ResourceManager.Compute.Tests.Helpers;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
 
-namespace Azure.ResourceManager.Compute.Tests
+namespace Azure.ResourceManager.Compute.Tests.Mock
 {
     /// <summary> Test for DiskAccess. </summary>
-    public partial class DiskAccessContainerMockTests : ComputeTestBase
+    public partial class DiskAccessContainerMockTests : MockTestBase
     {
-        public DiskAccessContainerMockTests(bool isAsync) : base(isAsync)
+        public DiskAccessContainerMockTests(bool isAsync) : base(isAsync, RecordedTestMode.Record)
         {
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
         }
 
-        private async Task<DiskAccessContainer> GetDiskAccessContainerAsync()
+        private async Task<DiskAccessContainer> GetDiskAccessContainerAsync(string resourceGroupName)
         {
-            var resourceGroup = await CreateResourceGroupAsync();
-            return resourceGroup.GetDiskAccesses();
+            ResourceGroup resourceGroup = await TestHelper.CreateResourceGroupAsync(resourceGroupName, GetArmClient());
+            DiskAccessContainer diskAccessContainer = resourceGroup.GetDiskAccesses();
+            return diskAccessContainer;
         }
 
-        [TestCase]
-        [RecordedTest]
-        public async Task CreateOrUpdate()
-        {
-            var container = await GetDiskAccessContainerAsync();
-            // Example: Create a disk access resource.
-            var diskAccessName = "myDiskAccess";
-            var diskAccess = new DiskAccessData("West US");
-
-            container.CreateOrUpdate(diskAccessName, diskAccess);
-        }
         [TestCase]
         [RecordedTest]
         public async Task CreateOrUpdateAsync()
         {
-            var container = await GetDiskAccessContainerAsync();
             // Example: Create a disk access resource.
+            var container = await GetDiskAccessContainerAsync("myResourceGroup");
             var diskAccessName = "myDiskAccess";
             var diskAccess = new DiskAccessData("West US");
 

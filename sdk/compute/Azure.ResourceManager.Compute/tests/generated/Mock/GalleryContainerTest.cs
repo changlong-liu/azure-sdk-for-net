@@ -5,54 +5,40 @@
 
 #nullable disable
 
+using System.Net;
 using System.Threading.Tasks;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.Compute;
 using Azure.ResourceManager.Compute.Models;
+using Azure.ResourceManager.Compute.Tests;
 using Azure.ResourceManager.Compute.Tests.Helpers;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
 
-namespace Azure.ResourceManager.Compute.Tests
+namespace Azure.ResourceManager.Compute.Tests.Mock
 {
     /// <summary> Test for Gallery. </summary>
-    public partial class GalleryContainerMockTests : ComputeTestBase
+    public partial class GalleryContainerMockTests : MockTestBase
     {
-        public GalleryContainerMockTests(bool isAsync) : base(isAsync)
+        public GalleryContainerMockTests(bool isAsync) : base(isAsync, RecordedTestMode.Record)
         {
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
         }
 
-        private async Task<GalleryContainer> GetGalleryContainerAsync()
+        private async Task<GalleryContainer> GetGalleryContainerAsync(string resourceGroupName)
         {
-            var resourceGroup = await CreateResourceGroupAsync();
-            return resourceGroup.GetGalleries();
+            ResourceGroup resourceGroup = await TestHelper.CreateResourceGroupAsync(resourceGroupName, GetArmClient());
+            GalleryContainer galleryContainer = resourceGroup.GetGalleries();
+            return galleryContainer;
         }
 
-        [TestCase]
-        [RecordedTest]
-        public async Task CreateOrUpdate()
-        {
-            var container = await GetGalleryContainerAsync();
-            // Example: Create or update a simple gallery with sharing profile.
-            var galleryName = "myGalleryName";
-            var gallery = new GalleryData("West US")
-            {
-                Description = "This is the gallery description.",
-                SharingProfile = new SharingProfile()
-                {
-                    Permissions = new Compute.Models.GallerySharingPermissionTypes("Groups"),
-                },
-            };
-
-            container.CreateOrUpdate(galleryName, gallery);
-        }
         [TestCase]
         [RecordedTest]
         public async Task CreateOrUpdateAsync()
         {
-            var container = await GetGalleryContainerAsync();
             // Example: Create or update a simple gallery with sharing profile.
+            var container = await GetGalleryContainerAsync("myResourceGroup");
             var galleryName = "myGalleryName";
             var gallery = new GalleryData("West US")
             {

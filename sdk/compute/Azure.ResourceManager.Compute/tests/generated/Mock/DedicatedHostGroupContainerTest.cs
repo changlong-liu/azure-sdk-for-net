@@ -5,51 +5,40 @@
 
 #nullable disable
 
+using System.Net;
 using System.Threading.Tasks;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.Compute;
 using Azure.ResourceManager.Compute.Models;
+using Azure.ResourceManager.Compute.Tests;
 using Azure.ResourceManager.Compute.Tests.Helpers;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
 
-namespace Azure.ResourceManager.Compute.Tests
+namespace Azure.ResourceManager.Compute.Tests.Mock
 {
     /// <summary> Test for DedicatedHostGroup. </summary>
-    public partial class DedicatedHostGroupContainerMockTests : ComputeTestBase
+    public partial class DedicatedHostGroupContainerMockTests : MockTestBase
     {
-        public DedicatedHostGroupContainerMockTests(bool isAsync) : base(isAsync)
+        public DedicatedHostGroupContainerMockTests(bool isAsync) : base(isAsync, RecordedTestMode.Record)
         {
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
         }
 
-        private async Task<DedicatedHostGroupContainer> GetDedicatedHostGroupContainerAsync()
+        private async Task<DedicatedHostGroupContainer> GetDedicatedHostGroupContainerAsync(string resourceGroupName)
         {
-            var resourceGroup = await CreateResourceGroupAsync();
-            return resourceGroup.GetDedicatedHostGroups();
+            ResourceGroup resourceGroup = await TestHelper.CreateResourceGroupAsync(resourceGroupName, GetArmClient());
+            DedicatedHostGroupContainer dedicatedHostGroupContainer = resourceGroup.GetDedicatedHostGroups();
+            return dedicatedHostGroupContainer;
         }
 
-        [TestCase]
-        [RecordedTest]
-        public async Task CreateOrUpdate()
-        {
-            var container = await GetDedicatedHostGroupContainerAsync();
-            // Example: Create or update a dedicated host group.
-            var hostGroupName = "myDedicatedHostGroup";
-            var parameters = new DedicatedHostGroupData("westus")
-            {
-                PlatformFaultDomainCount = 3,
-                SupportAutomaticPlacement = true,
-            };
-            parameters.Tags.ReplaceWith(new System.Collections.Generic.Dictionary<string, string>() { { "department", "finance" }, });
-            container.CreateOrUpdate(hostGroupName, parameters);
-        }
         [TestCase]
         [RecordedTest]
         public async Task CreateOrUpdateAsync()
         {
-            var container = await GetDedicatedHostGroupContainerAsync();
             // Example: Create or update a dedicated host group.
+            var container = await GetDedicatedHostGroupContainerAsync("myResourceGroup");
             var hostGroupName = "myDedicatedHostGroup";
             var parameters = new DedicatedHostGroupData("westus")
             {

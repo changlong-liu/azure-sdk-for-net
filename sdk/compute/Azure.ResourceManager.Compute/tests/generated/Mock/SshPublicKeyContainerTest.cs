@@ -5,50 +5,40 @@
 
 #nullable disable
 
+using System.Net;
 using System.Threading.Tasks;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.Compute;
 using Azure.ResourceManager.Compute.Models;
+using Azure.ResourceManager.Compute.Tests;
 using Azure.ResourceManager.Compute.Tests.Helpers;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
 
-namespace Azure.ResourceManager.Compute.Tests
+namespace Azure.ResourceManager.Compute.Tests.Mock
 {
     /// <summary> Test for SshPublicKey. </summary>
-    public partial class SshPublicKeyContainerMockTests : ComputeTestBase
+    public partial class SshPublicKeyContainerMockTests : MockTestBase
     {
-        public SshPublicKeyContainerMockTests(bool isAsync) : base(isAsync)
+        public SshPublicKeyContainerMockTests(bool isAsync) : base(isAsync, RecordedTestMode.Record)
         {
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
         }
 
-        private async Task<SshPublicKeyContainer> GetSshPublicKeyContainerAsync()
+        private async Task<SshPublicKeyContainer> GetSshPublicKeyContainerAsync(string resourceGroupName)
         {
-            var resourceGroup = await CreateResourceGroupAsync();
-            return resourceGroup.GetSshPublicKeys();
+            ResourceGroup resourceGroup = await TestHelper.CreateResourceGroupAsync(resourceGroupName, GetArmClient());
+            SshPublicKeyContainer sshPublicKeyContainer = resourceGroup.GetSshPublicKeys();
+            return sshPublicKeyContainer;
         }
 
-        [TestCase]
-        [RecordedTest]
-        public async Task CreateOrUpdate()
-        {
-            var container = await GetSshPublicKeyContainerAsync();
-            // Example: Create a new SSH public key resource.
-            var sshPublicKeyName = "mySshPublicKeyName";
-            var parameters = new SshPublicKeyData("westus")
-            {
-                PublicKey = "{ssh-rsa public key}",
-            };
-
-            container.CreateOrUpdate(sshPublicKeyName, parameters);
-        }
         [TestCase]
         [RecordedTest]
         public async Task CreateOrUpdateAsync()
         {
-            var container = await GetSshPublicKeyContainerAsync();
             // Example: Create a new SSH public key resource.
+            var container = await GetSshPublicKeyContainerAsync("myResourceGroup");
             var sshPublicKeyName = "mySshPublicKeyName";
             var parameters = new SshPublicKeyData("westus")
             {

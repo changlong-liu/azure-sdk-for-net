@@ -5,50 +5,40 @@
 
 #nullable disable
 
+using System.Net;
 using System.Threading.Tasks;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.Compute;
 using Azure.ResourceManager.Compute.Models;
+using Azure.ResourceManager.Compute.Tests;
 using Azure.ResourceManager.Compute.Tests.Helpers;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
 
-namespace Azure.ResourceManager.Compute.Tests
+namespace Azure.ResourceManager.Compute.Tests.Mock
 {
     /// <summary> Test for ProximityPlacementGroup. </summary>
-    public partial class ProximityPlacementGroupContainerMockTests : ComputeTestBase
+    public partial class ProximityPlacementGroupContainerMockTests : MockTestBase
     {
-        public ProximityPlacementGroupContainerMockTests(bool isAsync) : base(isAsync)
+        public ProximityPlacementGroupContainerMockTests(bool isAsync) : base(isAsync, RecordedTestMode.Record)
         {
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
         }
 
-        private async Task<ProximityPlacementGroupContainer> GetProximityPlacementGroupContainerAsync()
+        private async Task<ProximityPlacementGroupContainer> GetProximityPlacementGroupContainerAsync(string resourceGroupName)
         {
-            var resourceGroup = await CreateResourceGroupAsync();
-            return resourceGroup.GetProximityPlacementGroups();
+            ResourceGroup resourceGroup = await TestHelper.CreateResourceGroupAsync(resourceGroupName, GetArmClient());
+            ProximityPlacementGroupContainer proximityPlacementGroupContainer = resourceGroup.GetProximityPlacementGroups();
+            return proximityPlacementGroupContainer;
         }
 
-        [TestCase]
-        [RecordedTest]
-        public async Task CreateOrUpdate()
-        {
-            var container = await GetProximityPlacementGroupContainerAsync();
-            // Example: Create or Update a proximity placement group.
-            var proximityPlacementGroupName = "myProximityPlacementGroup";
-            var parameters = new ProximityPlacementGroupData("westus")
-            {
-                ProximityPlacementGroupType = new Compute.Models.ProximityPlacementGroupType("Standard"),
-            };
-
-            container.CreateOrUpdate(proximityPlacementGroupName, parameters);
-        }
         [TestCase]
         [RecordedTest]
         public async Task CreateOrUpdateAsync()
         {
-            var container = await GetProximityPlacementGroupContainerAsync();
             // Example: Create or Update a proximity placement group.
+            var container = await GetProximityPlacementGroupContainerAsync("myResourceGroup");
             var proximityPlacementGroupName = "myProximityPlacementGroup";
             var parameters = new ProximityPlacementGroupData("westus")
             {

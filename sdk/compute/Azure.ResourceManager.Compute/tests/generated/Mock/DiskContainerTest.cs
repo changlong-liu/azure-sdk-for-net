@@ -5,53 +5,40 @@
 
 #nullable disable
 
+using System.Net;
 using System.Threading.Tasks;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.Compute;
 using Azure.ResourceManager.Compute.Models;
+using Azure.ResourceManager.Compute.Tests;
 using Azure.ResourceManager.Compute.Tests.Helpers;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
 
-namespace Azure.ResourceManager.Compute.Tests
+namespace Azure.ResourceManager.Compute.Tests.Mock
 {
     /// <summary> Test for Disk. </summary>
-    public partial class DiskContainerMockTests : ComputeTestBase
+    public partial class DiskContainerMockTests : MockTestBase
     {
-        public DiskContainerMockTests(bool isAsync) : base(isAsync)
+        public DiskContainerMockTests(bool isAsync) : base(isAsync, RecordedTestMode.Record)
         {
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
         }
 
-        private async Task<DiskContainer> GetDiskContainerAsync()
+        private async Task<DiskContainer> GetDiskContainerAsync(string resourceGroupName)
         {
-            var resourceGroup = await CreateResourceGroupAsync();
-            return resourceGroup.GetDisks();
+            ResourceGroup resourceGroup = await TestHelper.CreateResourceGroupAsync(resourceGroupName, GetArmClient());
+            DiskContainer diskContainer = resourceGroup.GetDisks();
+            return diskContainer;
         }
 
-        [TestCase]
-        [RecordedTest]
-        public async Task CreateOrUpdate()
-        {
-            var container = await GetDiskContainerAsync();
-            // Example: Create a managed disk and associate with disk access resource.
-            var diskName = "myDisk";
-            var disk = new DiskData("West US")
-            {
-                CreationData = new CreationData(new Compute.Models.DiskCreateOption("Empty")),
-                DiskSizeGB = 200,
-                NetworkAccessPolicy = new Compute.Models.NetworkAccessPolicy("AllowPrivate"),
-                DiskAccessId = "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskAccesses/{existing-diskAccess-name}",
-            };
-
-            container.CreateOrUpdate(diskName, disk);
-        }
         [TestCase]
         [RecordedTest]
         public async Task CreateOrUpdateAsync()
         {
-            var container = await GetDiskContainerAsync();
             // Example: Create a managed disk and associate with disk access resource.
+            var container = await GetDiskContainerAsync("myResourceGroup");
             var diskName = "myDisk";
             var disk = new DiskData("West US")
             {

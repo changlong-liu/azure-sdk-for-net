@@ -5,54 +5,40 @@
 
 #nullable disable
 
+using System.Net;
 using System.Threading.Tasks;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.Compute;
 using Azure.ResourceManager.Compute.Models;
+using Azure.ResourceManager.Compute.Tests;
 using Azure.ResourceManager.Compute.Tests.Helpers;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
 
-namespace Azure.ResourceManager.Compute.Tests
+namespace Azure.ResourceManager.Compute.Tests.Mock
 {
     /// <summary> Test for Snapshot. </summary>
-    public partial class SnapshotContainerMockTests : ComputeTestBase
+    public partial class SnapshotContainerMockTests : MockTestBase
     {
-        public SnapshotContainerMockTests(bool isAsync) : base(isAsync)
+        public SnapshotContainerMockTests(bool isAsync) : base(isAsync, RecordedTestMode.Record)
         {
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
         }
 
-        private async Task<SnapshotContainer> GetSnapshotContainerAsync()
+        private async Task<SnapshotContainer> GetSnapshotContainerAsync(string resourceGroupName)
         {
-            var resourceGroup = await CreateResourceGroupAsync();
-            return resourceGroup.GetSnapshots();
+            ResourceGroup resourceGroup = await TestHelper.CreateResourceGroupAsync(resourceGroupName, GetArmClient());
+            SnapshotContainer snapshotContainer = resourceGroup.GetSnapshots();
+            return snapshotContainer;
         }
 
-        [TestCase]
-        [RecordedTest]
-        public async Task CreateOrUpdate()
-        {
-            var container = await GetSnapshotContainerAsync();
-            // Example: Create a snapshot by importing an unmanaged blob from a different subscription.
-            var snapshotName = "mySnapshot1";
-            var snapshot = new SnapshotData("West US")
-            {
-                CreationData = new CreationData(new Compute.Models.DiskCreateOption("Import"))
-                {
-                    StorageAccountId = "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Storage/storageAccounts/myStorageAccount",
-                    SourceUri = "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
-                },
-            };
-
-            container.CreateOrUpdate(snapshotName, snapshot);
-        }
         [TestCase]
         [RecordedTest]
         public async Task CreateOrUpdateAsync()
         {
-            var container = await GetSnapshotContainerAsync();
             // Example: Create a snapshot by importing an unmanaged blob from a different subscription.
+            var container = await GetSnapshotContainerAsync("myResourceGroup");
             var snapshotName = "mySnapshot1";
             var snapshot = new SnapshotData("West US")
             {

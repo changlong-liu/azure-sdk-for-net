@@ -5,87 +5,40 @@
 
 #nullable disable
 
+using System.Net;
 using System.Threading.Tasks;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.Compute;
 using Azure.ResourceManager.Compute.Models;
+using Azure.ResourceManager.Compute.Tests;
 using Azure.ResourceManager.Compute.Tests.Helpers;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
 
-namespace Azure.ResourceManager.Compute.Tests
+namespace Azure.ResourceManager.Compute.Tests.Mock
 {
     /// <summary> Test for VirtualMachine. </summary>
-    public partial class VirtualMachineContainerMockTests : ComputeTestBase
+    public partial class VirtualMachineContainerMockTests : MockTestBase
     {
-        public VirtualMachineContainerMockTests(bool isAsync) : base(isAsync)
+        public VirtualMachineContainerMockTests(bool isAsync) : base(isAsync, RecordedTestMode.Record)
         {
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
         }
 
-        private async Task<VirtualMachineContainer> GetVirtualMachineContainerAsync()
+        private async Task<VirtualMachineContainer> GetVirtualMachineContainerAsync(string resourceGroupName)
         {
-            var resourceGroup = await CreateResourceGroupAsync();
-            return resourceGroup.GetVirtualMachines();
+            ResourceGroup resourceGroup = await TestHelper.CreateResourceGroupAsync(resourceGroupName, GetArmClient());
+            VirtualMachineContainer virtualMachineContainer = resourceGroup.GetVirtualMachines();
+            return virtualMachineContainer;
         }
 
-        [TestCase]
-        [RecordedTest]
-        public async Task CreateOrUpdate()
-        {
-            var container = await GetVirtualMachineContainerAsync();
-            // Example: Create a Linux vm with a patch setting assessmentMode of ImageDefault.
-            var vmName = "myVM";
-            var parameters = new VirtualMachineData("westus")
-            {
-                HardwareProfile = new HardwareProfile()
-                {
-                    VmSize = new Compute.Models.VirtualMachineSizeTypes("Standard_D2s_v3"),
-                },
-                StorageProfile = new StorageProfile()
-                {
-                    ImageReference = new ImageReference()
-                    {
-                        Publisher = "Canonical",
-                        Offer = "UbuntuServer",
-                        Sku = "16.04-LTS",
-                        Version = "latest",
-                    },
-                    OsDisk = new OSDisk(new Compute.Models.DiskCreateOptionTypes("FromImage"))
-                    {
-                        Name = "myVMosdisk",
-                        Caching = "ReadWrite".ToCachingTypes(),
-                        ManagedDisk = new ManagedDiskParameters()
-                        {
-                            StorageAccountType = new Compute.Models.StorageAccountTypes("Premium_LRS"),
-                        },
-                    },
-                },
-                OsProfile = new OSProfile()
-                {
-                    ComputerName = "myVM",
-                    AdminUsername = "{your-username}",
-                    AdminPassword = "{your-password}",
-                    LinuxConfiguration = new LinuxConfiguration()
-                    {
-                        ProvisionVMAgent = true,
-                        PatchSettings = new LinuxPatchSettings()
-                        {
-                            AssessmentMode = new Compute.Models.LinuxPatchAssessmentMode("ImageDefault"),
-                        },
-                    },
-                },
-                NetworkProfile = new NetworkProfile(),
-            };
-
-            container.CreateOrUpdate(vmName, parameters);
-        }
         [TestCase]
         [RecordedTest]
         public async Task CreateOrUpdateAsync()
         {
-            var container = await GetVirtualMachineContainerAsync();
             // Example: Create a Linux vm with a patch setting assessmentMode of ImageDefault.
+            var container = await GetVirtualMachineContainerAsync("myResourceGroup");
             var vmName = "myVM";
             var parameters = new VirtualMachineData("westus")
             {

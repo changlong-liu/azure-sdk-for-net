@@ -5,55 +5,40 @@
 
 #nullable disable
 
+using System.Net;
 using System.Threading.Tasks;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.Compute;
 using Azure.ResourceManager.Compute.Models;
+using Azure.ResourceManager.Compute.Tests;
 using Azure.ResourceManager.Compute.Tests.Helpers;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
 
-namespace Azure.ResourceManager.Compute.Tests
+namespace Azure.ResourceManager.Compute.Tests.Mock
 {
     /// <summary> Test for DiskEncryptionSet. </summary>
-    public partial class DiskEncryptionSetContainerMockTests : ComputeTestBase
+    public partial class DiskEncryptionSetContainerMockTests : MockTestBase
     {
-        public DiskEncryptionSetContainerMockTests(bool isAsync) : base(isAsync)
+        public DiskEncryptionSetContainerMockTests(bool isAsync) : base(isAsync, RecordedTestMode.Record)
         {
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
         }
 
-        private async Task<DiskEncryptionSetContainer> GetDiskEncryptionSetContainerAsync()
+        private async Task<DiskEncryptionSetContainer> GetDiskEncryptionSetContainerAsync(string resourceGroupName)
         {
-            var resourceGroup = await CreateResourceGroupAsync();
-            return resourceGroup.GetDiskEncryptionSets();
+            ResourceGroup resourceGroup = await TestHelper.CreateResourceGroupAsync(resourceGroupName, GetArmClient());
+            DiskEncryptionSetContainer diskEncryptionSetContainer = resourceGroup.GetDiskEncryptionSets();
+            return diskEncryptionSetContainer;
         }
 
-        [TestCase]
-        [RecordedTest]
-        public async Task CreateOrUpdate()
-        {
-            var container = await GetDiskEncryptionSetContainerAsync();
-            // Example: Create a disk encryption set with key vault from a different subscription.
-            var diskEncryptionSetName = "myDiskEncryptionSet";
-            var diskEncryptionSet = new DiskEncryptionSetData("West US")
-            {
-                Identity = new EncryptionSetIdentity()
-                {
-                    Type = new Compute.Models.DiskEncryptionSetIdentityType("SystemAssigned"),
-                },
-                EncryptionType = new Compute.Models.DiskEncryptionSetType("EncryptionAtRestWithCustomerKey"),
-                ActiveKey = new KeyForDiskEncryptionSet("https://myvaultdifferentsub.vault-int.azure-int.net/keys/{key}"),
-            };
-
-            container.CreateOrUpdate(diskEncryptionSetName, diskEncryptionSet);
-        }
         [TestCase]
         [RecordedTest]
         public async Task CreateOrUpdateAsync()
         {
-            var container = await GetDiskEncryptionSetContainerAsync();
             // Example: Create a disk encryption set with key vault from a different subscription.
+            var container = await GetDiskEncryptionSetContainerAsync("myResourceGroup");
             var diskEncryptionSetName = "myDiskEncryptionSet";
             var diskEncryptionSet = new DiskEncryptionSetData("West US")
             {

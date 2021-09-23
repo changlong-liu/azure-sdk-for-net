@@ -5,82 +5,40 @@
 
 #nullable disable
 
+using System.Net;
 using System.Threading.Tasks;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.Compute;
 using Azure.ResourceManager.Compute.Models;
+using Azure.ResourceManager.Compute.Tests;
 using Azure.ResourceManager.Compute.Tests.Helpers;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
 
-namespace Azure.ResourceManager.Compute.Tests
+namespace Azure.ResourceManager.Compute.Tests.Mock
 {
     /// <summary> Test for VirtualMachineScaleSet. </summary>
-    public partial class VirtualMachineScaleSetContainerMockTests : ComputeTestBase
+    public partial class VirtualMachineScaleSetContainerMockTests : MockTestBase
     {
-        public VirtualMachineScaleSetContainerMockTests(bool isAsync) : base(isAsync)
+        public VirtualMachineScaleSetContainerMockTests(bool isAsync) : base(isAsync, RecordedTestMode.Record)
         {
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
         }
 
-        private async Task<VirtualMachineScaleSetContainer> GetVirtualMachineScaleSetContainerAsync()
+        private async Task<VirtualMachineScaleSetContainer> GetVirtualMachineScaleSetContainerAsync(string resourceGroupName)
         {
-            var resourceGroup = await CreateResourceGroupAsync();
-            return resourceGroup.GetVirtualMachineScaleSets();
+            ResourceGroup resourceGroup = await TestHelper.CreateResourceGroupAsync(resourceGroupName, GetArmClient());
+            VirtualMachineScaleSetContainer virtualMachineScaleSetContainer = resourceGroup.GetVirtualMachineScaleSets();
+            return virtualMachineScaleSetContainer;
         }
 
-        [TestCase]
-        [RecordedTest]
-        public async Task CreateOrUpdate()
-        {
-            var container = await GetVirtualMachineScaleSetContainerAsync();
-            // Example: Create a custom-image scale set from an unmanaged generalized os image.
-            var vmScaleSetName = "{vmss-name}";
-            var parameters = new VirtualMachineScaleSetData("westus")
-            {
-                Sku = new Sku()
-                {
-                    Name = "Standard_D1_v2",
-                    Tier = "Standard",
-                    Capacity = 3,
-                },
-                UpgradePolicy = new UpgradePolicy()
-                {
-                    Mode = "Manual".ToUpgradeMode(),
-                },
-                VirtualMachineProfile = new VirtualMachineScaleSetVMProfile()
-                {
-                    OsProfile = new VirtualMachineScaleSetOSProfile()
-                    {
-                        ComputerNamePrefix = "{vmss-name}",
-                        AdminUsername = "{your-username}",
-                        AdminPassword = "{your-password}",
-                    },
-                    StorageProfile = new VirtualMachineScaleSetStorageProfile()
-                    {
-                        OsDisk = new VirtualMachineScaleSetOSDisk(new Compute.Models.DiskCreateOptionTypes("FromImage"))
-                        {
-                            Name = "osDisk",
-                            Caching = "ReadWrite".ToCachingTypes(),
-                            Image = new VirtualHardDisk()
-                            {
-                                Uri = "http://{existing-storage-account-name}.blob.core.windows.net/{existing-container-name}/{existing-generalized-os-image-blob-name}.vhd",
-                            },
-                        },
-                    },
-                    NetworkProfile = new VirtualMachineScaleSetNetworkProfile(),
-                },
-                Overprovision = true,
-            };
-
-            container.CreateOrUpdate(vmScaleSetName, parameters);
-        }
         [TestCase]
         [RecordedTest]
         public async Task CreateOrUpdateAsync()
         {
-            var container = await GetVirtualMachineScaleSetContainerAsync();
             // Example: Create a custom-image scale set from an unmanaged generalized os image.
+            var container = await GetVirtualMachineScaleSetContainerAsync("myResourceGroup");
             var vmScaleSetName = "{vmss-name}";
             var parameters = new VirtualMachineScaleSetData("westus")
             {

@@ -5,60 +5,47 @@
 
 #nullable disable
 
+using System.Net;
 using System.Threading.Tasks;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager;
 using Azure.ResourceManager.Compute;
 using Azure.ResourceManager.Compute.Models;
+using Azure.ResourceManager.Compute.Tests;
 using Azure.ResourceManager.Compute.Tests.Helpers;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
 
-namespace Azure.ResourceManager.Compute.Tests
+namespace Azure.ResourceManager.Compute.Tests.Mock
 {
     /// <summary> Test for RestorePointCollection. </summary>
-    public partial class RestorePointCollectionContainerMockTests : ComputeTestBase
+    public partial class RestorePointCollectionContainerMockTests : MockTestBase
     {
-        public RestorePointCollectionContainerMockTests(bool isAsync) : base(isAsync)
+        public RestorePointCollectionContainerMockTests(bool isAsync) : base(isAsync, RecordedTestMode.Record)
         {
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
         }
 
-        private async Task<RestorePointCollectionContainer> GetRestorePointCollectionContainerAsync()
+        private async Task<RestorePointCollectionContainer> GetRestorePointCollectionContainerAsync(string resourceGroupName)
         {
-            var resourceGroup = await CreateResourceGroupAsync();
-            return resourceGroup.GetRestorePointCollections();
+            ResourceGroup resourceGroup = await TestHelper.CreateResourceGroupAsync(resourceGroupName, GetArmClient());
+            RestorePointCollectionContainer restorePointCollectionContainer = resourceGroup.GetRestorePointCollections();
+            return restorePointCollectionContainer;
         }
 
-        [TestCase]
-        [RecordedTest]
-        public async Task CreateOrUpdate()
-        {
-            var container = await GetRestorePointCollectionContainerAsync();
-            // Example: Create or update a restore point collection.
-            var restorePointCollectionName = "myRpc";
-            var parameters = new RestorePointCollectionData("norwayeast")
-            {
-                Source = new RestorePointCollectionSourceProperties()
-                {
-                    Id = new ResourceIdentifier("/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/myVM"),
-                },
-            };
-            parameters.Tags.ReplaceWith(new System.Collections.Generic.Dictionary<string, string>() { { "myTag1", "tagValue1" }, });
-            container.CreateOrUpdate(restorePointCollectionName, parameters);
-        }
         [TestCase]
         [RecordedTest]
         public async Task CreateOrUpdateAsync()
         {
-            var container = await GetRestorePointCollectionContainerAsync();
             // Example: Create or update a restore point collection.
+            var container = await GetRestorePointCollectionContainerAsync("myResourceGroup");
             var restorePointCollectionName = "myRpc";
             var parameters = new RestorePointCollectionData("norwayeast")
             {
                 Source = new RestorePointCollectionSourceProperties()
                 {
-                    Id = new ResourceIdentifier("/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/myVM"),
+                    Id = new ResourceIdentifier($"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myResourceGroup/providers/Microsoft.Compute/virtualMachines/myVM"),
                 },
             };
             parameters.Tags.ReplaceWith(new System.Collections.Generic.Dictionary<string, string>() { { "myTag1", "tagValue1" }, });

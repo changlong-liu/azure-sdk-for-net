@@ -5,51 +5,41 @@
 
 #nullable disable
 
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.Compute;
 using Azure.ResourceManager.Compute.Models;
+using Azure.ResourceManager.Compute.Tests;
 using Azure.ResourceManager.Compute.Tests.Helpers;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
 
-namespace Azure.ResourceManager.Compute.Tests
+namespace Azure.ResourceManager.Compute.Tests.Mock
 {
     /// <summary> Test for AvailabilitySet. </summary>
-    public partial class AvailabilitySetContainerMockTests : ComputeTestBase
+    public partial class AvailabilitySetContainerMockTests : MockTestBase
     {
-        public AvailabilitySetContainerMockTests(bool isAsync) : base(isAsync)
+        public AvailabilitySetContainerMockTests(bool isAsync) : base(isAsync, RecordedTestMode.Record)
         {
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
         }
 
-        private async Task<AvailabilitySetContainer> GetAvailabilitySetContainerAsync()
+        private async Task<AvailabilitySetContainer> GetAvailabilitySetContainerAsync(string resourceGroupName)
         {
-            var resourceGroup = await CreateResourceGroupAsync();
-            return resourceGroup.GetAvailabilitySets();
+            ResourceGroup resourceGroup = await TestHelper.CreateResourceGroupAsync(resourceGroupName, GetArmClient());
+            AvailabilitySetContainer availabilitySetContainer = resourceGroup.GetAvailabilitySets();
+            return availabilitySetContainer;
         }
 
-        [TestCase]
-        [RecordedTest]
-        public async Task CreateOrUpdate()
-        {
-            var container = await GetAvailabilitySetContainerAsync();
-            // Example: Create an availability set.
-            var availabilitySetName = "myAvailabilitySet";
-            var parameters = new AvailabilitySetData("westus")
-            {
-                PlatformUpdateDomainCount = 20,
-                PlatformFaultDomainCount = 2,
-            };
-
-            container.CreateOrUpdate(availabilitySetName, parameters);
-        }
         [TestCase]
         [RecordedTest]
         public async Task CreateOrUpdateAsync()
         {
-            var container = await GetAvailabilitySetContainerAsync();
             // Example: Create an availability set.
+            var container = await GetAvailabilitySetContainerAsync("myResourceGroup");
             var availabilitySetName = "myAvailabilitySet";
             var parameters = new AvailabilitySetData("westus")
             {

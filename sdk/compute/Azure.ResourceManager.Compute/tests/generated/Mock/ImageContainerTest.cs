@@ -5,61 +5,41 @@
 
 #nullable disable
 
+using System.Net;
 using System.Threading.Tasks;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager;
 using Azure.ResourceManager.Compute;
 using Azure.ResourceManager.Compute.Models;
+using Azure.ResourceManager.Compute.Tests;
 using Azure.ResourceManager.Compute.Tests.Helpers;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
 
-namespace Azure.ResourceManager.Compute.Tests
+namespace Azure.ResourceManager.Compute.Tests.Mock
 {
     /// <summary> Test for Image. </summary>
-    public partial class ImageContainerMockTests : ComputeTestBase
+    public partial class ImageContainerMockTests : MockTestBase
     {
-        public ImageContainerMockTests(bool isAsync) : base(isAsync)
+        public ImageContainerMockTests(bool isAsync) : base(isAsync, RecordedTestMode.Record)
         {
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
         }
 
-        private async Task<ImageContainer> GetImageContainerAsync()
+        private async Task<ImageContainer> GetImageContainerAsync(string resourceGroupName)
         {
-            var resourceGroup = await CreateResourceGroupAsync();
-            return resourceGroup.GetImages();
+            ResourceGroup resourceGroup = await TestHelper.CreateResourceGroupAsync(resourceGroupName, GetArmClient());
+            ImageContainer imageContainer = resourceGroup.GetImages();
+            return imageContainer;
         }
 
-        [TestCase]
-        [RecordedTest]
-        public async Task CreateOrUpdate()
-        {
-            var container = await GetImageContainerAsync();
-            // Example: Create a virtual machine image from a blob with DiskEncryptionSet resource.
-            var imageName = "myImage";
-            var parameters = new ImageData("West US")
-            {
-                StorageProfile = new ImageStorageProfile()
-                {
-                    OsDisk = new ImageOSDisk("Linux".ToOperatingSystemTypes(), "Generalized".ToOperatingSystemStateTypes())
-                    {
-                        BlobUri = "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
-                        DiskEncryptionSet = new DiskEncryptionSetParameters()
-                        {
-                            Id = new ResourceIdentifier("/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{existing-diskEncryptionSet-name}"),
-                        },
-                    },
-                },
-            };
-
-            container.CreateOrUpdate(imageName, parameters);
-        }
         [TestCase]
         [RecordedTest]
         public async Task CreateOrUpdateAsync()
         {
-            var container = await GetImageContainerAsync();
             // Example: Create a virtual machine image from a blob with DiskEncryptionSet resource.
+            var container = await GetImageContainerAsync("myResourceGroup");
             var imageName = "myImage";
             var parameters = new ImageData("West US")
             {
@@ -70,7 +50,7 @@ namespace Azure.ResourceManager.Compute.Tests
                         BlobUri = "https://mystorageaccount.blob.core.windows.net/osimages/osimage.vhd",
                         DiskEncryptionSet = new DiskEncryptionSetParameters()
                         {
-                            Id = new ResourceIdentifier("/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{existing-diskEncryptionSet-name}"),
+                            Id = new ResourceIdentifier($"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{{existing-diskEncryptionSet-name}}"),
                         },
                     },
                 },
