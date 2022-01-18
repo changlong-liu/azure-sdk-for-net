@@ -8,6 +8,7 @@ input-file: https://github.com/Azure/azure-rest-api-specs/blob/b2bddfe2e59b5b14e
 namespace: Azure.Analytics.Purview.Account
 data-plane: true
 security: AADToken
+skip-csproj: true
 security-scopes:  https://purview.azure.net/.default
 ```
 

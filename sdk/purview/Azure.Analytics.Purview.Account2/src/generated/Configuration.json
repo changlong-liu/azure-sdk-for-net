@@ -1,0 +1,10 @@
+{
+  "OutputFolder": ".",
+  "Namespace": "Azure.Analytics.Purview.Account",
+  "LibraryName": null,
+  "SharedSourceFolders": [
+    "..\\Generator.Shared",
+    "..\\Azure.Core.Shared"
+  ],
+  "data-plane": true
+}
