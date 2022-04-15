@@ -107,6 +107,9 @@ namespace Azure.ResourceManager.TestFramework
         [TearDown]
         protected void CleanupResourceGroups()
         {
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+
             if (Mode != RecordedTestMode.Playback)
             {
                 Parallel.ForEach(ResourceGroupCleanupPolicy.ResourceGroupsCreated, resourceGroup =>
@@ -136,6 +139,8 @@ namespace Azure.ResourceManager.TestFramework
                     }
                 });
             }
+            stopwatch.Stop();
+            Console.WriteLine("ManagementRecordedTestBase::TearDown: Elapsed Time is {0} s", stopwatch.Elapsed.TotalSeconds);
         }
 
         private async Task StartSessionRecordingAsync()
